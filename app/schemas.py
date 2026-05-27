@@ -13,3 +13,4 @@ class ResumeAnalysisResponse(BaseModel):
     risk_flags: List[str]
     recommended_improvements: List[str]
     interview_questions: List[str]
+    extracted_resume_preview: str

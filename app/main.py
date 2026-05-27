@@ -1,6 +1,6 @@
-from fastapi import FastAPI, UploadFile, File, Form
-from schemas import ResumeAnalysisResponse
-import uvicorn
+from fastapi import FastAPI, UploadFile, File, Form, HTTPException
+from app.schemas import ResumeAnalysisResponse
+from app.services.resume_parser import extract_text_from_pdf
 
 app = FastAPI(
     title="AI Resume Screener API",
@@ -18,11 +18,30 @@ def root():
 def health_check():
     return {"status": "ok"}
 
-@app.post("/analyze-resume", response_model= ResumeAnalysisResponse)
+
+@app.post("/analyze-resume", response_model=ResumeAnalysisResponse)
 async def analyze_resume(
-    resune_file: UploadFile = File(...),
+    resume_file: UploadFile = File(...),
     job_description: str = Form(...),
 ):
+    if not resume_file.filename:
+        raise HTTPException(status_code=400, detail="No file uploaded.")
+
+    if not resume_file.filename.lower().endswith(".pdf"):
+        raise HTTPException(status_code=400, detail="Only PDF files are supported.")
+
+    try:
+        file_bytes = await resume_file.read()
+        resume_text = extract_text_from_pdf(file_bytes)
+    except Exception as error:
+        raise HTTPException(status_code=400, detail=f"PDF extraction failed: {str(error)}")
+
+    if not resume_text:
+        raise HTTPException(
+            status_code=400,
+            detail="Could not extract text from the PDF. The PDF may be scanned or image-based.",
+        )
+
     return ResumeAnalysisResponse(
         candidate_name="Sample Candidate",
         target_role="AI Engineer",
@@ -45,7 +64,5 @@ async def analyze_resume(
             "How would you validate the output of an LLM?",
             "How would you prevent hallucinated resume claims?",
         ],
+        extracted_resume_preview=resume_text[:1000],
     )
-
-if __name__ == "__main__":
-    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
