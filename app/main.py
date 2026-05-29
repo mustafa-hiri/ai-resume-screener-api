@@ -1,6 +1,7 @@
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException
 from app.schemas import ResumeAnalysisResponse
 from app.services.resume_parser import extract_text_from_pdf
+from app.services.jd_parser import extract_required_skills
 
 app = FastAPI(
     title="AI Resume Screener API",
