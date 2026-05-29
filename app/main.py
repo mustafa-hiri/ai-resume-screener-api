@@ -4,6 +4,13 @@ from app.services.resume_parser import extract_text_from_pdf
 from app.services.jd_parser import extract_required_skills
 from app.services.scoring import match_skills_with_resume, calculate_match_score
 from app.services.profile_extractor import extract_candidate_name, extract_target_role
+from app.services.report_generator import (
+    determine_experience_fit,
+    determine_education_fit,
+    generate_risk_flags,
+    generate_recommended_improvements,
+    generate_interview_questions,
+)
 
 
 app = FastAPI(
@@ -41,7 +48,16 @@ async def analyze_resume(
         matched_skills, missing_skills = match_skills_with_resume(required_skills=required_skills,resume_text=resume_text)
         match_score = calculate_match_score(matched_skills=matched_skills,required_skills=required_skills)
         candidate_name = extract_candidate_name(resume_text)
-        target_role = extract_target_role(job_description)   
+        target_role = extract_target_role(job_description)
+        experience_fit = determine_experience_fit(match_score)
+        education_fit = determine_education_fit(resume_text)
+        risk_flags = generate_risk_flags(resume_text, missing_skills)
+        recommended_improvements = generate_recommended_improvements(missing_skills)
+        interview_questions = generate_interview_questions(
+            target_role=target_role,
+            matched_skills=matched_skills,
+            missing_skills=missing_skills,
+) 
 
 
 
@@ -60,21 +76,10 @@ async def analyze_resume(
         match_score=match_score,
         matched_skills=matched_skills,
         missing_skills=missing_skills,
-        experience_fit="Good",
-        education_fit="Strong",
-        risk_flags=[
-            "No clear production deployment experience",
-            "Limited evidence of cloud infrastructure experience",
-        ],
-        recommended_improvements=[
-            "Add deployed FastAPI project to resume",
-            "Add Docker and cloud deployment experience",
-            "Add measurable AI project evaluation results",
-        ],
-        interview_questions=[
-            "How would you design an AI resume screening API?",
-            "How would you validate the output of an LLM?",
-            "How would you prevent hallucinated resume claims?",
-        ],
+        experience_fit=experience_fit,
+        education_fit=education_fit,
+        risk_flags=risk_flags,
+        recommended_improvements=recommended_improvements,
+        interview_questions=interview_questions,
         extracted_resume_preview=resume_text[:1000],
     )
