@@ -2,6 +2,7 @@ from fastapi import FastAPI, UploadFile, File, Form, HTTPException
 from app.schemas import ResumeAnalysisResponse
 from app.services.resume_parser import extract_text_from_pdf
 from app.services.jd_parser import extract_required_skills
+from app.services.scoring import match_skills_with_resume, calculate_match_score
 
 app = FastAPI(
     title="AI Resume Screener API",
@@ -34,6 +35,12 @@ async def analyze_resume(
     try:
         file_bytes = await resume_file.read()
         resume_text = extract_text_from_pdf(file_bytes)
+        required_skills = extract_required_skills(job_description)
+        matched_skills, missing_skills = match_skills_with_resume(required_skills=required_skills,resume_text=resume_text)
+        match_score = calculate_match_score(matched_skills=matched_skills,required_skills=required_skills)    
+
+
+
     except Exception as error:
         raise HTTPException(status_code=400, detail=f"PDF extraction failed: {str(error)}")
 
@@ -46,9 +53,9 @@ async def analyze_resume(
     return ResumeAnalysisResponse(
         candidate_name="Sample Candidate",
         target_role="AI Engineer",
-        match_score=75,
-        matched_skills=["Python", "FastAPI", "Machine Learning"],
-        missing_skills=["Docker", "Kubernetes", "LLM Evaluation"],
+        match_score=match_score,
+        matched_skills=matched_skills,
+        missing_skills=missing_skills,
         experience_fit="Good",
         education_fit="Strong",
         risk_flags=[
