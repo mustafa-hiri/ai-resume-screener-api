@@ -14,3 +14,7 @@ class ResumeAnalysisResponse(BaseModel):
     recommended_improvements: List[str]
     interview_questions: List[str]
     extracted_resume_preview: str
+
+
+class SavedAnalysisResponse(ResumeAnalysisResponse):
+    id: int

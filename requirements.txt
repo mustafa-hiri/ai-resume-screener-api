@@ -9,3 +9,4 @@ openai
 pytest
 httpx
 PyMuPDF
+sqlalchemy
