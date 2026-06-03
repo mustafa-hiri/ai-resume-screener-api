@@ -158,3 +158,13 @@ Add frontend dashboard
 Add deployment to Render, Railway, or AWS
 Add CI/CD with GitHub Actions
 Add LLM evaluation metrics
+
+# If yoy wanna clones this GitHub project follow these steps:
+
+```cmd
+git clone https://github.com/username/ai-resume-screener-api.git
+cd ai-resume-screener-api
+docker build -t ai-resume-screener-api .
+docker run -p 8000:8000 ai-resume-screener-api
+pip install --no-cache-dir -r requirements.txt
+```
