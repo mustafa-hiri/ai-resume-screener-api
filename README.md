@@ -71,7 +71,7 @@ Build the image:
 
 ```bash
 docker build -t ai-resume-screener-api .
-
+```
 # Folder Structure
 ai-resume-screener-api/
 │
