@@ -1,8 +1,27 @@
+from io import BytesIO
+
 from fastapi.testclient import TestClient
+from reportlab.pdfgen import canvas
 
 from app.main import app
 
 client = TestClient(app)
+
+
+def create_test_pdf(text: str) -> BytesIO:
+    """
+    Create a simple in-memory PDF file for API testing.
+    """
+
+    pdf_buffer = BytesIO()
+
+    pdf = canvas.Canvas(pdf_buffer)
+    pdf.drawString(100, 750, text)
+    pdf.save()
+
+    pdf_buffer.seek(0)
+
+    return pdf_buffer
 
 
 def test_health_endpoint():
@@ -34,6 +53,38 @@ def test_analyze_resume_rejects_non_pdf():
 
     assert response.status_code == 400
     assert response.json()["detail"] == "Only PDF files are supported."
+
+
+def test_analyze_resume_success():
+    pdf_file = create_test_pdf(
+        "John Doe has experience with Python, FastAPI, Docker, AWS, SQL, and testing."
+    )
+
+    response = client.post(
+        "/analyze-resume",
+        files={
+            "resume_file": ("resume.pdf", pdf_file, "application/pdf")
+        },
+        data={
+            "job_description": (
+                "We are hiring a Machine Learning Engineer with Python, "
+                "FastAPI, Docker, AWS, SQL, testing, and deployment experience."
+            )
+        },
+    )
+
+    response_data = response.json()
+
+    assert response.status_code == 200
+    assert "id" in response_data
+    assert response_data["candidate_name"]
+    assert response_data["target_role"] == "Machine Learning Engineer"
+    assert response_data["match_score"] >= 0
+    assert "Python" in response_data["matched_skills"]
+    assert "Fastapi" in response_data["matched_skills"]
+    assert "Docker" in response_data["matched_skills"]
+    assert "Aws" in response_data["matched_skills"]
+    assert "Sql" in response_data["matched_skills"]
 
 
 def test_get_all_analyses():
