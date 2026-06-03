@@ -1,4 +1,5 @@
 from fastapi.testclient import TestClient
+
 from app.main import app
 
 client = TestClient(app)
@@ -33,3 +34,24 @@ def test_analyze_resume_rejects_non_pdf():
 
     assert response.status_code == 400
     assert response.json()["detail"] == "Only PDF files are supported."
+
+
+def test_get_all_analyses():
+    response = client.get("/analyses")
+
+    assert response.status_code == 200
+    assert isinstance(response.json(), list)
+
+
+def test_get_analysis_not_found():
+    response = client.get("/analysis/999999")
+
+    assert response.status_code == 404
+    assert response.json()["detail"] == "Analysis not found."
+
+
+def test_delete_analysis_not_found():
+    response = client.delete("/analysis/999999")
+
+    assert response.status_code == 404
+    assert response.json()["detail"] == "Analysis not found."
