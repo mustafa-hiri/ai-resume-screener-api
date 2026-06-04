@@ -16,5 +16,18 @@ class ResumeAnalysisResponse(BaseModel):
     extracted_resume_preview: str
 
 
+class AIResumeAnalysis(BaseModel):
+    candidate_name: str
+    target_role: str
+    match_score: int = Field(ge=0, le=100)
+    matched_skills: List[str]
+    missing_skills: List[str]
+    experience_fit: str
+    education_fit: str
+    risk_flags: List[str]
+    recommended_improvements: List[str]
+    interview_questions: List[str]
+
+
 class SavedAnalysisResponse(ResumeAnalysisResponse):
     id: int
