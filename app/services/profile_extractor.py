@@ -54,17 +54,49 @@ def extract_target_role(job_description: str) -> str:
     Extract a probable target role from the job description.
     """
 
+    patterns = [
+        r"role:\s*([A-Za-z0-9\s\/\-\+]+)",
+        r"job title:\s*([A-Za-z0-9\s\/\-\+]+)",
+        r"position:\s*([A-Za-z0-9\s\/\-\+]+)",
+        r"title:\s*([A-Za-z0-9\s\/\-\+]+)",
+        r"we are hiring (?:a|an)?\s*([A-Za-z0-9\s\/\-\+]+)",
+        r"join our .* as (?:a|an)?\s*([A-Za-z0-9\s\/\-\+]+)",
+    ]
+
+    for pattern in patterns:
+        match = re.search(pattern, job_description, re.IGNORECASE)
+
+        if match:
+            role = match.group(1).strip()
+
+            role = re.split(
+                r"\n|\.|,| at | with | in ",
+                role,
+                flags=re.IGNORECASE,
+            )[0].strip()
+
+            if 2 <= len(role.split()) <= 6:
+                return role
+
     known_roles = [
         "AI Engineer",
         "Machine Learning Engineer",
+        "Deep Learning Engineer",
+        "Deep Learning Intern",
+        "Machine Learning Intern",
+        "AI Intern",
+        "Perception Intern",
+        "Computer Vision Intern",
+        "Computer Vision Engineer",
         "Data Scientist",
         "Data Analyst",
         "Backend Engineer",
         "Software Engineer",
         "NLP Engineer",
-        "Computer Vision Engineer",
         "MLOps Engineer",
         "LLM Engineer",
+        "Research Scientist",
+        "Robotics Engineer",
     ]
 
     job_description_lower = job_description.lower()
