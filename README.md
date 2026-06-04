@@ -71,7 +71,7 @@ Build the image:
 
 ```bash
 docker build -t ai-resume-screener-api .
-
+```
 # Folder Structure
 ai-resume-screener-api/
 │
@@ -141,20 +141,28 @@ ai-resume-screener-api/
 }
 
 # Current Limitations
-Skill extraction is rule-based.
-Resume parsing works best with text-based PDFs.
-Scanned resumes are not supported yet.
-No authentication yet.
-No frontend yet.
-OpenAI integration is planned but not yet added.
-
+- Skill extraction is rule-based.
+- Resume parsing works best with text-based PDFs.
+- Scanned resumes are not supported yet.
+- No authentication yet.
+- No frontend yet.
+- OpenAI integration is planned but not yet added.
 
 # Future Improvements
-Add OpenAI structured output analysis
-Add OCR for scanned resumes
-Add PostgreSQL support
-Add authentication
-Add frontend dashboard
-Add deployment to Render, Railway, or AWS
-Add CI/CD with GitHub Actions
-Add LLM evaluation metrics
+- Add OpenAI structured output analysis
+- Add OCR for scanned resumes
+- Add PostgreSQL support
+- Add authentication
+- Add frontend dashboard
+- Add deployment to Render, Railway, or AWS
+- Add CI/CD with GitHub Actions
+- Add LLM evaluation metrics
+
+# If yoy wanna clones this GitHub project follow these steps:
+
+```cmd
+git clone https://github.com/username/ai-resume-screener-api.git
+cd ai-resume-screener-api
+docker build -t ai-resume-screener-api .
+docker run -p 8000:8000 ai-resume-screener-api
+```
