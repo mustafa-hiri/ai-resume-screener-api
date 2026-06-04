@@ -11,3 +11,6 @@ httpx
 PyMuPDF
 sqlalchemy
 reportlab
+
+streamlit
+requests
